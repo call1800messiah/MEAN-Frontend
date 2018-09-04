@@ -1,0 +1,13 @@
+<form>
+  <input name="dataInput" id="dataInput" #newData>
+  <button (click)="onClickAdd(newData.value)">Send</button>
+</form>
+
+<div *ngFor="let data of dataObservable | async as dataList">
+  <div class="data-element">
+    <label for="{{data.label}}-{{data._id}}">{{data.label}}</label>
+    <input type="text" [(ngModel)]="data.content" name="dataContent" id="{{data.label}}-{{data._id}}" (change)="onClickUpdate(data)" />
+    <button type="button" (click)="onClickUpdate(data)">Update</button>
+    <button type="button" (click)="onClickDelete(data)">X</button>
+  </div>
+</div>

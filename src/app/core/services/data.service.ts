@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { CONFIG } from "../config";
+import { CONFIG } from '../config';
 import * as socketIO from 'socket.io-client';
-import {Observable, Subject} from "rxjs/index";
+import { Observable, Subject } from 'rxjs/index';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +17,6 @@ export class DataService {
 
   create(data): void {
     this.socket.emit('create', data);
-    this.socket.on('dataCreated', (data) => console.log(data));
   }
 
   delete(data) {
@@ -44,7 +43,7 @@ export class DataService {
     }
     this.socket.on('retrieveAllData', (data) => {
       this.data = data;
-      this.dataSubject.next(this.data)
+      this.dataSubject.next(this.data);
     });
     this.socket.on('dataCreated', (data) => {
       this.data.push(data);

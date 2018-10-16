@@ -75,9 +75,15 @@ export class AuthService {
         user
       );
     } else {
+      const options = {
+        headers: {}
+      };
+      if (type !== 'steam') {
+        options.headers = { Authorization: `Bearer ${this.getToken()}` };
+      }
       base = this.http.get(
       `${CONFIG.API_HOST}${CONFIG.API_PATH}${CONFIG.API_VERSION}/users/${type}`,
-      { headers: { Authorization: `Bearer ${this.getToken()}` }}
+      options
       );
     }
 

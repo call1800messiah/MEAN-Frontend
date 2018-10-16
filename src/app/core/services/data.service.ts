@@ -12,7 +12,7 @@ export class DataService {
   private dataSubject: Subject<any[]>;
 
   constructor() {
-    this.socket = socketIO(CONFIG.DB);
+    this.socket = socketIO(CONFIG.API_HOST);
   }
 
   create(data): void {

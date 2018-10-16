@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { UserDetails } from '../interfaces/IUserDetails';
 import { TokenResponse } from '../interfaces/ITokenResponse';
 import { TokenPayload } from '../interfaces/ITokenPayload';
+import { CONFIG } from '../config';
 
 
 
@@ -69,9 +70,15 @@ export class AuthService {
     let base;
 
     if (method === 'post') {
-      base = this.http.post(`http://localhost:3001/api/users/${type}`, user);
+      base = this.http.post(
+      `${CONFIG.API_HOST}${CONFIG.API_PATH}${CONFIG.API_VERSION}/users/${type}`,
+        user
+      );
     } else {
-      base = this.http.get(`http://localhost:3001/api/users/${type}`, { headers: { Authorization: `Bearer ${this.getToken()}` }});
+      base = this.http.get(
+      `${CONFIG.API_HOST}${CONFIG.API_PATH}${CONFIG.API_VERSION}/users/${type}`,
+      { headers: { Authorization: `Bearer ${this.getToken()}` }}
+      );
     }
 
     const request = base.pipe(

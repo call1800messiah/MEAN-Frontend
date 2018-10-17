@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { CONFIG } from '../config';
 import * as socketIO from 'socket.io-client';
 import { Observable, Subject } from 'rxjs/index';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,8 +12,12 @@ export class DataService {
   private data;
   private dataSubject: Subject<any[]>;
 
-  constructor() {
-    this.socket = socketIO(CONFIG.API_HOST);
+  constructor(private auth: AuthService) {
+    let query = '';
+    if (this.auth.isLoggedIn()) {
+      query = `?token=${auth.getToken()}`;
+    }
+    this.socket = socketIO(`${CONFIG.API_HOST}${query}`);
   }
 
   create(data): void {

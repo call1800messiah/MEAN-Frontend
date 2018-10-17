@@ -21,6 +21,14 @@ export class AuthService {
   constructor(private http: HttpClient, private router: Router) { }
 
 
+  getToken(): string {
+    if (!this.token) {
+      this.token = localStorage.getItem('mean-token');
+    }
+    return this.token;
+  }
+
+
   getUserDetails(): UserDetails {
     const token = this.getToken();
     let payload;
@@ -100,13 +108,5 @@ export class AuthService {
     );
 
     return request;
-  }
-
-
-  private getToken(): string {
-    if (!this.token) {
-      this.token = localStorage.getItem('mean-token');
-    }
-    return this.token;
   }
 }

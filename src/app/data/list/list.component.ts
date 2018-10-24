@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import {Observable} from "rxjs/index";
-import {DataService} from "../../core/services/data.service";
+import { Observable } from 'rxjs/index';
+import { DataService } from '../../core/services/data.service';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-list',
@@ -10,8 +11,11 @@ import {DataService} from "../../core/services/data.service";
 export class ListComponent implements OnInit {
   dataObservable: Observable<any>;
   newData: string;
+  loggedIn: boolean;
 
-  constructor(private dataService: DataService) { }
+  constructor(private dataService: DataService, private auth: AuthService) {
+    this.loggedIn = this.auth.isLoggedIn();
+  }
 
   ngOnInit() {
     this.dataObservable = this.dataService.retrieveAll();

@@ -3,6 +3,7 @@ import { Observable, of } from 'rxjs/index';
 import { delay, map, tap } from 'rxjs/internal/operators';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import * as socketIO from 'socket.io-client';
 import { UserDetails } from '../interfaces/IUserDetails';
 import { TokenResponse } from '../interfaces/ITokenResponse';
 import { TokenPayload } from '../interfaces/ITokenPayload';
@@ -15,10 +16,22 @@ import { CONFIG } from '../config';
 })
 export class AuthService {
   redirectUrl: string;
+  private socket = null;
   private token: string;
 
 
-  constructor(private http: HttpClient, private router: Router) { }
+  constructor(private http: HttpClient, private router: Router) {
+    this.initSocket();
+  }
+
+
+
+  getSocket(): any {
+    if (this.socket === null) {
+      this.initSocket();
+    }
+    return this.socket;
+  }
 
 
   getToken(): string {
@@ -65,6 +78,7 @@ export class AuthService {
   logout(): void {
     this.token = '';
     window.localStorage.removeItem('mean-token');
+    this.initSocket();
     this.router.navigateByUrl('/');
   }
 
@@ -80,12 +94,25 @@ export class AuthService {
   }
 
 
+  private initSocket(): void {
+    if (this.socket !== null) {
+      console.log('Disconnecting socket');
+      this.socket.disconnect();
+    }
+    let query = '';
+    if (this.isLoggedIn()) {
+      query = `?token=${this.getToken()}`;
+    }
+    this.socket = socketIO(`${CONFIG.API_HOST}${query}`);
+  }
+
+
   private request(method: 'post'|'get', type: 'login'|'register'|'profile'|'steam', user?: TokenPayload): Observable<any> {
     let base;
 
     if (method === 'post') {
       base = this.http.post(
-      `${CONFIG.API_HOST}${CONFIG.API_PATH}${CONFIG.API_VERSION}/users/${type}`,
+        `${CONFIG.API_HOST}${CONFIG.API_PATH}${CONFIG.API_VERSION}/users/${type}`,
         user
       );
     } else {
@@ -93,8 +120,8 @@ export class AuthService {
         headers: {}
       };
       base = this.http.get(
-      `${CONFIG.API_HOST}${CONFIG.API_PATH}${CONFIG.API_VERSION}/users/${type}`,
-      options
+        `${CONFIG.API_HOST}${CONFIG.API_PATH}${CONFIG.API_VERSION}/users/${type}`,
+        options
       );
     }
 
@@ -103,6 +130,7 @@ export class AuthService {
         if (data.token) {
           this.saveToken(data.token);
         }
+        this.initSocket();
         return data;
       })
     );

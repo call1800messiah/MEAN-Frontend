@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CONFIG } from '../config';
-import * as socketIO from 'socket.io-client';
-import { Observable, Subject } from 'rxjs/index';
+import { Subject } from 'rxjs/index';
 import { AuthService } from './auth.service';
 
 @Injectable({
@@ -13,11 +11,7 @@ export class DataService {
   private dataSubject: Subject<any[]>;
 
   constructor(private auth: AuthService) {
-    let query = '';
-    if (this.auth.isLoggedIn()) {
-      query = `?token=${auth.getToken()}`;
-    }
-    this.socket = socketIO(`${CONFIG.API_HOST}${query}`);
+    this.socket = this.auth.getSocket();
   }
 
   create(data): void {
@@ -55,12 +49,18 @@ export class DataService {
       this.dataSubject.next(this.data);
     });
     this.socket.on('dataDeleted', (id) => {
-      this.data.splice(this.data.indexOf(this.data.filter((obj) => obj._id === id)[0]), 1);
-      this.dataSubject.next(this.data);
+      const target = this.data.filter((obj) => obj._id === id)[0];
+      if (target) {
+        this.data.splice(this.data.indexOf(target), 1);
+        this.dataSubject.next(this.data);
+      }
     });
     this.socket.on('dataUpdated', (data) => {
-      this.data.splice(this.data.indexOf(this.data.filter((obj) => obj._id === data._id)[0]), 1, data);
-      this.dataSubject.next(this.data);
+      const target = this.data.filter((obj) => obj._id === data._id)[0];
+      if (target) {
+        this.data.splice(this.data.indexOf(target), 1, data);
+        this.dataSubject.next(this.data);
+      }
     });
   }
 }

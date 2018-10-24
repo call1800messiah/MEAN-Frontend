@@ -8,7 +8,7 @@ const routes: Routes = [
     path: 'auth',
   },
   {
-    canLoad: [AuthGuardService],
+    // canLoad: [AuthGuardService],
     loadChildren: 'src/app/data/data.module#DataModule',
     path: 'data',
   },
